@@ -7,9 +7,15 @@ class HangpersonGame
 
   # def initialize()
   # end
-  
+  attr_reader :word
+  attr_reader :guesses
+  attr_reader :wrong_guesses
+
   def initialize(word)
     @word = word
+    @guesses = ''
+    @wrong_guesses = ''
+    @currentLetter = ''
   end
 
   # You can test it by running $ bundle exec irb -I. -r app.rb
@@ -24,4 +30,21 @@ class HangpersonGame
     }
   end
 
+  def guess(letter)
+    @currentLetter = letter.downcase
+
+    unless self.guessedAlready()
+      @word.include?(letter) ? self.updateGuessList(@guesses) : self.updateGuessList(@wrong_guesses)
+    else
+      return false
+    end
+  end
+
+  def updateGuessList(guessList)
+    guessList << @currentLetter unless guessList.include? @currentLetter
+  end
+
+  def guessedAlready()
+    return (@guesses.include? @currentLetter) || (@wrong_guesses.include? @currentLetter)
+  end
 end
