@@ -10,12 +10,16 @@ class HangpersonGame
   attr_reader :word
   attr_reader :guesses
   attr_reader :wrong_guesses
+  attr_reader :word_with_guesses
 
   def initialize(word)
     @word = word
+    @wordNormalized = word.downcase
     @guesses = ''
     @wrong_guesses = ''
     @currentLetter = ''
+    @word_with_guesses = ''
+    word.each_char {|letter| @word_with_guesses << '-'}
   end
 
   # You can test it by running $ bundle exec irb -I. -r app.rb
@@ -31,20 +35,51 @@ class HangpersonGame
   end
 
   def guess(letter)
+    @currentLetter = letter
+
+    self.validateGuess()
+
     @currentLetter = letter.downcase
 
     unless self.guessedAlready()
-      @word.include?(letter) ? self.updateGuessList(@guesses) : self.updateGuessList(@wrong_guesses)
+      if @wordNormalized.include? @currentLetter
+        self.updateGuessList(@guesses)
+        self.updateWordDisplay()
+      else
+        self.updateGuessList(@wrong_guesses)
+      end
     else
       return false
     end
+
   end
 
   def updateGuessList(guessList)
     guessList << @currentLetter unless guessList.include? @currentLetter
   end
 
+  def updateWordDisplay()
+    for i in 0..@word.length
+      if @wordNormalized[i] == @currentLetter
+        @word_with_guesses[i] = @word[i]
+      end
+    end
+  end
+
   def guessedAlready()
     return (@guesses.include? @currentLetter) || (@wrong_guesses.include? @currentLetter)
+  end
+
+  def validateGuess()
+    case @currentLetter
+    when ''
+      raise ArgumentError.new('Must guess something!')
+    when nil
+      raise ArgumentError.new('Guess is nil value!')
+    end
+
+    unless @currentLetter =~ /[[:alpha:]]/
+      raise ArgumentError.new('Must guess a letter!')
+    end
   end
 end
