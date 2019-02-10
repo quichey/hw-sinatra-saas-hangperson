@@ -41,7 +41,7 @@ class HangpersonGame
 
     @currentLetter = letter.downcase
 
-    unless self.guessedAlready()
+    unless self.guessedAlready() || (self.check_win_or_lose() != :play)
       if @wordNormalized.include? @currentLetter
         self.updateGuessList(@guesses)
         self.updateWordDisplay()
@@ -80,6 +80,16 @@ class HangpersonGame
 
     unless @currentLetter =~ /[[:alpha:]]/
       raise ArgumentError.new('Must guess a letter!')
+    end
+  end
+
+  def check_win_or_lose()
+    if @word_with_guesses == @word
+      return :win
+    elsif @wrong_guesses.length >= 7
+      return :lose
+    else
+      return :play
     end
   end
 end
